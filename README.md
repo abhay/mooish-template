@@ -48,7 +48,7 @@ What's in the box?
   build a customized js file that includes classes from any library (with a 
   `scripts.json` file), including your own source code. For example:
   
-    $> ruby build.rb Core JsonP MyRadClassIsTight
+    $> ruby build.rb -l "Core JsonP MyRadClassIsTight"
     
   Notice that all three of the supplied dependencies are from different
   libraries (Mootools-core, Clientcide and fake respectively). Since all
@@ -57,23 +57,31 @@ What's in the box?
   dependencies.
   
   This really comes in handy for building custom Javascript lib files for your
-  projects. For example, my site www.iancollins.me uses classes from Mootools, 
-  Clientcide and Brawndo™. I have a one-line file "3n" with this inside of it:
+  projects. For this reason there is a projects.yml file you can use to store
+  these project class lists. 
+  
+  For example, my site www.iancollins.me uses classes from Mootools, 
+  Clientcide and Brawndo. In my projects.yml file in the modules section I have:
     
-    JsonP Date Date.Extras JustTheTip Number.BrawndoExtras Function.BrawndoExtras 
+    Request.JSONP Date Date.Extras JustTheTip Number.BrawndoExtras Function.BrawndoExtras 
     Element.BrawndoScrolling Element.BrawndoExtras Element.BrawndoImage 
     Element.BrawndoStyles Element.BrawndoDisplaying params String.BrawndoExtras 
     Array.BrawndoExtras dbug TwitterHelpers RandomGlobals DomReady 
     CSSTransitions.Tween
     
-  Now to build all the necessary lib js you simple do: 
+  Now to build all the necessary lib js I simple do: 
   
-    ruby build.rb <($3n)
+    ruby build.rb -p 3n
     
 ### builder.yml
 
   This is a YAML defining paths to all of the project's `scripts.json` files that
   you want depend on for this project. 
+  
+### projects.yml
+
+  This is a YAML defining the classes (modules) needed for each of your projects,
+  as well as the file path for the output of the build process. 
     
 ### Source/
 
@@ -153,22 +161,27 @@ Running your tests
 Building a custom lib js file
 -----------------------------
 
-  First, edit the build.yml file to suite your needs. Add/remove items from the 
-  dependency_paths list to point to all of the `scripts.json` files you care
-  about. In this template I point to mootools-more, mootools-core, clientcide 
-  and of course, the Source directory here.
-  
+  First, edit the build.yml and projects.yml files to suite your needs. 
+  Add/remove items from the dependency_paths list to point to all of the 
+  scripts.json files you care about. In my setup I point to mootools-more, 
+  mootools-core, clientcide and of course, Brawndo™ (the Source directory here). 
+
   Now, in the root directory of the project run:
-    
-    ruby build.rb Class1 Class2 Class3
-    
+
+    ruby build.rb -l "Class1 Class2 Class3" [-o output_path]
+
   List as many filenames (class names, usually) as you want, separated by spaces. 
-  If you aren't sure of what you can put in this list, look at any `scripts.json`
+  If you aren't sure of what you can put in this list, look at any scripts.json
   file (there is one in the Source directory here) - anything at the 2nd depth
-  in the hash is fair game. Examples: Array, InvisibleDimensions, JsonP. In 
-  other words, if it is a .js file under any Mooish Source dir you can use it.
-  
-  This will output a file in the top-level, whose name is given in build.yml. 
+  in the hash is fair game. Examples: Array, InvisibleDimensions, Request.JSONP
+
+  If you have a projects.yml file with some project's module list in it you can
+  do the following:
+
+    ruby build.rb -p project_name
+
+  The output for the file in this case is specified along with the project definition
+  in projects.yml.
   
 [1]: http://mootools.net/
 [2]: http://www.clientcide.com  

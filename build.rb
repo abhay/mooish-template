@@ -8,8 +8,12 @@
 # Fx.Tween, DomReady including all dependencies:
 # ./build.rb Fx.Tween DomReady
 
+# todo looks like it builds an empty file if nothing from brawndo in list
+
 require 'rubygems'
 require 'json'
+require 'yaml'
+require 'trollop'
 
 module MooTools
   class Build
@@ -56,9 +60,10 @@ module MooTools
       @string << File.read("#{@data[name][:folder]}/#{name}.js") << "\n"
     end
     
-    def build
-      @string ||= full_build
+    def build      
+      @string ||= full_build      
       @string.sub!('%build%', build_number)
+      @string
     end
     alias :to_s :build
     
@@ -75,19 +80,19 @@ module MooTools
       save build_path
     end
     
-    def self.build!(argv, mootools = MooTools::Build.new)      
+    def self.build!(definition, builder = MooTools::Build.new)
       catch :script_not_found do
-        if argv.length > 0
-          argv.each { |script| mootools.load_script(script) }
+        if definition && definition[:modules] && definition[:modules].length > 0
+          definition[:modules].each { |script| builder.load_script(script) }
         else
           mootools.full_build
         end
       end
       
-      puts "MooTools Built '#{mootools.build_path}'"
-      print "  Included Scripts:","\n    "
-      puts mootools.included.join(" ")
-      mootools.save!      
+      puts "MooTools Built '#{builder.build_path}'"
+      print "\tIncluded Scripts:","\n    "
+      puts builder.included.join(" ")
+      builder.save!      
     end
     
   end
@@ -95,13 +100,47 @@ end
 
 if __FILE__ == $0
   
-  conf = YAML.load_file('build.yml')
-
-  builder = MooTools::Build.new({
-    :dependency_paths => conf[:dependency_paths], 
-    :build_path => conf[:build_path]
-  })
-
-  MooTools::Build.build! ARGV, builder
+  opts = Trollop::options do
+    opt :build_config,
+      "Build Configuration file (YAML file where all the dependency paths live",
+      :type => :string,
+      :default => File.join(File.dirname(__FILE__), "build.yml")
+    opt :definitions,
+      "Projects definition file (YAML file defining all the projects you work on", 
+      :type => :string, 
+      :default => File.join(File.dirname(__FILE__), "projects.yml")
+    opt :project,
+      "Project to build",
+      :type => :string
+    opt :override_list,
+      "Override projects.yml and project selection and just build a file with a list of classes",
+      :type => :string,
+      :short => 'l'
+    opt :output,
+      "Output file location. This overrides any project.yml definition and defaults to brawndo.js if you provide an override list",
+      :type => :string,
+      :default => 'brawndo.js'
+  end
   
+  Trollop::die "could not find build configuration file at: #{opts[:build_config]}" unless File.exists?(opts[:build_config])
+  conf = YAML.load_file(opts[:build_config])
+  dependency_paths = conf[:dependency_paths]
+
+  Trollop::die "you need to either specify a project a specify overrides." unless opts[:project] || opts[:override_list]
+  if opts[:project].nil? && opts[:override_list]
+    build_path = opts[:output]
+    definition = { :modules => opts[:override_list].split, :build_path => build_path }
+  else
+    Trollop::die "could not find projects definition file at: #{opts[:definitions]}" unless File.exists?(opts[:definitions])
+    definitions = YAML.load_file(opts[:definitions])
+    definition = definitions[opts[:project].intern]
+    build_path = definition[:build_path]
+  end
+  
+  builder = MooTools::Build.new(
+    :dependency_paths => dependency_paths, 
+    :build_path => build_path
+  )
+
+  MooTools::Build.build! definition, builder
 end
