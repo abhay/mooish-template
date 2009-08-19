@@ -4,6 +4,3 @@
   - '../mootools-more/Source'  # Mootools More
   - '../cnetjavascript/Source' # clientcide
   - './Source'                 # This project
-
-# output file path
-:build_path: './lib.js'
