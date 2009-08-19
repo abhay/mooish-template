@@ -1,0 +1,7 @@
+---
+:fuck:
+  :build_path: /Users/abhay/Source/git/fuck/js/circadian.js
+  :modules:
+    - Request.JSON
+    - DomReady
+    - Selectors
