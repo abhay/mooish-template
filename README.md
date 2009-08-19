@@ -157,6 +157,14 @@ Running your tests
   directories. The first object being passed in to the UnitTester constructor
   is what you should change. 
   
+  IMPORTANT: The UnitTester library is now a submodule so you need to run: 
+  
+    git submodule init && git submodule update
+    
+  for it to work. You should also read the "Configuration" section in 
+  Tests/UnitTester after you get the submodule. It will tell you what files to
+  copy up into your Tests directory for everything to work right. 
+  
   
 Building a custom lib js file
 -----------------------------
