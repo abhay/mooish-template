@@ -88,8 +88,7 @@ module Brawndo
         end
       end
       
-      puts "Done."
-      # exporter.save      
+      puts "Done. Files are in #{exporter.build_path}"
     end
     
   end
@@ -99,6 +98,7 @@ end
 
 # todo
 # make an export-all method to run though the yml and update all plugins
+# more useful info on what happened when the script was run
 
 if $0 == __FILE__
   
