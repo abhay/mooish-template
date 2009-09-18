@@ -34,10 +34,10 @@ module MooTools
       @data     = {}
       
       @dependency_paths.each do |dependency_path|
-        json = JSON.load(File.read( dependency_path + "/#{@dependency_file}" ))
+        json = JSON.load(File.read( dependency_path[:path] + "/#{@dependency_file}" ))
         json.each_pair do |folder, group|
           group.each_pair do |script, properties|
-            @data[script] = {:folder => "#{dependency_path}/#{folder}", :deps => properties["deps"]}
+            @data[script] = {:folder => "#{dependency_path[:path]}/#{folder}", :deps => properties["deps"]}
           end
         end
       end

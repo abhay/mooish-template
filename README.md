@@ -191,6 +191,29 @@ Building a custom lib js file
   The output for the file in this case is specified along with the project definition
   in projects.yml.
   
+Exporting plugins for use on the Forge
+--------------------------------------
+
+  _Here, a plugin is a series of scripts/classes from either this repo or one 
+  pointed to from build.yml and a package.yml file_
+
+  First, edit the build.yml and plugins.yml files to suite your needs.
+  For help on building these look at build.yml.example and plugins.yml.example.
+
+  To build a directory ready for pushing to the Forge, you have two options:
+
+  1. _ruby export.rb -p "JustTheTip"_ builds the plugin "JustTheTip" found in
+     your plugins.yml file. The package.yml file will include all of the
+     requires/references as well as the metadata found for that plugin in 
+     plugins.yml. All scripts for this plugin listed in plugins.yml are copied 
+     into the output directory.
+  2. _ruby export.rb -l "JustTheTip JustTheTip.Ajax"_ builds the plugin 
+     "JustTheTip" from scratch. The package.yml file will include all of the
+     requires/references __only__. Both scripts necessary are copied into the 
+     output directory.
+
+For any extra help just do _ruby export.rb -h_.
+  
 [1]: http://mootools.net/
 [2]: http://www.clientcide.com  
 [3]: http://www.clientcide.com/TestFramework/readme.html
